@@ -90,7 +90,11 @@ contract MinimalAccount is IAccount, Ownable {
      *      This constructor calls the Ownable constructor with msg.sender,
      *      establishing ownership immediately upon deployment.
      */
-    constructor() Ownable(msg.sender) {}
+    constructor(address entryPoint) Ownable(msg.sender) {
+        i_entryPoint = IEntryPoint(entryPoint);
+    }
+
+    receive() external payable {}
 
     /*//////////////////////////////////////////////////////////////
                              EXTERNAL FUNCTIONS
@@ -240,5 +244,15 @@ contract MinimalAccount is IAccount, Ownable {
             // the fund transfer and cause the entire user operation to fail
             success; // suppress unused variable warning
         }
+    }
+
+    /**
+     * @notice Returns the EntryPoint contract associated with this account
+     * @dev This function allows external callers to retrieve the EntryPoint
+     * contract address.
+     * @return IEntryPoint The EntryPoint contract instance
+     */
+    function getEntryPoint() external view returns (IEntryPoint) {
+        return i_entryPoint;
     }
 }
