@@ -246,12 +246,6 @@ contract MinimalAccount is IAccount, Ownable {
         }
     }
 
-    /**
-     * @notice Returns the EntryPoint contract associated with this account
-     * @dev This function allows external callers to retrieve the EntryPoint
-     * contract address.
-     * @return IEntryPoint The EntryPoint contract instance
-     */
     function getEntryPoint() external view returns (IEntryPoint) {
         return i_entryPoint;
     }
