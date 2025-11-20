@@ -27,11 +27,14 @@ contract SendPackedUserOp is Script {
             userOp
         );
         bytes32 ethSignedMessageHash = userOpHash.toEthSignedMessageHash();
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
 
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
-            config.account,
-            ethSignedMessageHash
-        );
+        uint256 ANVIL_PRIVATE_KEY = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
+        if (block.chainid == 31337)
+            (v, r, s) = vm.sign(ANVIL_PRIVATE_KEY, ethSignedMessageHash);
+        else (v, r, s) = vm.sign(config.account, ethSignedMessageHash);
         userOp.signature = abi.encodePacked(r, s, v);
         return userOp;
     }
@@ -63,14 +66,17 @@ contract SendPackedUserOp is Script {
                 nonce: nonce,
                 initCode: hex"",
                 callData: callData,
-                // accountGasLimits is packed as abi.encodePacked(uint128(verificationGasLimit), uint128(callGasLimit))
+                // accountGasLimits is packed as
+                // abi.encodePacked(uint128(verificationGasLimit),
+                // uint128(callGasLimit))
                 accountGasLimits: bytes32(
                     abi.encodePacked(
                         uint128(verificationGasLimit),
                         uint128(callGasLimit)
                     )
                 ),
-                // preVerificationGas is a separate field (batch overhead); reuse verificationGasLimit here if desired
+                // preVerificationGas is a separate field (batch overhead); reuse
+                // verificationGasLimit here if desired
                 preVerificationGas: verificationGasLimit,
                 gasFees: bytes32(
                     (uint256(maxPriorityFeePerGas) << 128) |
